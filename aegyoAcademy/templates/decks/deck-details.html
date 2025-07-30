@@ -53,6 +53,8 @@
             <a href="{% url 'deck-edit' deck.pk %}" class="btn btn-cute btn-secondary">
                 ✏️ Edit Deck
             </a>
+        {% endif %}
+        {%  if deck.owner == request.user or perms.decks.delete_deck %}
             <a href="{% url 'deck-delete' deck.pk %}" class="btn btn-cute btn-danger ms-2">
                 🗑️ Delete Deck
             </a>

@@ -1,8 +1,7 @@
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.urls import reverse_lazy, reverse
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.urls import reverse_lazy
 from django.db.models import Q
 from .models import Tag, Deck, Flashcard
 from decks.forms import SearchForm, DeckCreateForm, FlashcardCreateForm, DeckEditForm, FlashcardEditForm
@@ -40,11 +39,7 @@ class Dashboard(ListView, PermissionRequiredMixin):
 
         if user.is_authenticated:
             owned_decks = combined_qs.filter(owner=user)
-
-            if self.has_permission():
-                other_decks = combined_qs.exclude(owner=user)
-            else:
-                other_decks = combined_qs.filter(is_public=True).exclude(owner=user)
+            other_decks = combined_qs.exclude(owner=user)
         else:
             owned_decks = Deck.objects.none()
             other_decks = combined_qs
@@ -58,10 +53,22 @@ class Dashboard(ListView, PermissionRequiredMixin):
         return context
 
 
-class DeckDetailView(DetailView, PermissionRequiredMixin):
+class DeckDetailView(UserPassesTestMixin, DetailView):
     model = Deck
     template_name = 'decks/deck-details.html'
-    permission_required = 'decks.change_deck, decks.delete_deck'
+    context_object_name = 'deck'
+
+    def test_func(self):
+        deck = self.get_object()
+        user = self.request.user
+
+        if user.is_superuser or user.is_staff:
+            return True
+
+        if not user.is_authenticated:
+            return deck.is_public
+
+        return deck.is_public or deck.owner == user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
