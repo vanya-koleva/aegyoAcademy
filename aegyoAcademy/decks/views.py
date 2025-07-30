@@ -18,14 +18,20 @@ class Dashboard(ListView, PermissionRequiredMixin):
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset()
+        query = self.request.GET.get(self.query_param, '').strip()
 
         if not user.is_authenticated:
-            return queryset.filter(is_public=True)
+            queryset = queryset.filter(is_public=True)
+        elif not self.has_permission():
+            queryset = queryset.filter(Q(is_public=True) | Q(owner=user))
 
-        if self.has_permission():
-            return queryset
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct()
 
-        return queryset.filter(Q(is_public=True) | Q(owner=user))
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

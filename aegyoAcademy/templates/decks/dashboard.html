@@ -2,6 +2,13 @@
 
 {% block content %}
     
+    <div class="search-container mb-4">
+        <form method="GET">
+            {{ search_form.query }}
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    
     {% if request.user.is_authenticated %}
     <!-- Owned Decks Section -->
     <h2 class="aegyo-title text-center">My Decks</h2>
