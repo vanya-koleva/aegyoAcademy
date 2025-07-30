@@ -1,0 +1,46 @@
+<ul class="menu">
+    {% if request.user.is_authenticated %}
+        <li>
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <i class="nav-icon">🏠</i>
+                <span>Home</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'deck-create' %}" class="nav-link">
+                <i class="nav-icon">➕</i>
+                <span>Create Deck</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="nav-link">
+                <i class="nav-icon">👤</i>
+                <span>Profile</span>
+            </a>
+        </li>
+        <li>
+            <a onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-link logout-btn">
+                <i class="nav-icon">👋</i>
+                <span>Logout</span>
+            </a>
+        </li>
+    {% else %}
+        <li>
+            <a href="{% url 'index' %}" class="nav-link">
+                <i class="nav-icon">🏠</i>
+                <span>Home</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'login' %}" class="nav-link">
+                <i class="nav-icon">🔑</i>
+                <span>Login</span>
+            </a>
+        </li>
+    {% endif %}
+</ul>
+
+<form style="display: none;" id="logout-form" action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">logout</button>
+</form>

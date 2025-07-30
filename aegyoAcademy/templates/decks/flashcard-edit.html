@@ -1,0 +1,31 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="flashcard-create-container">
+    <!-- Header Section -->
+    <div class="deck-info-header mb-4">
+        <div class="aegyo-title">✿ Edit Flashcard ✿</div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-container">
+        <form method="post" class="aegyo-form">
+            {% csrf_token %}
+            
+            {% include 'common/flashcard-form.html' %}
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'flashcards-list' deck.pk %}" class="btn btn-cute btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-cute btn-primary">
+                    ✨ Update Flashcard ✨
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

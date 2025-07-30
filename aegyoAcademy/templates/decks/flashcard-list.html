@@ -1,0 +1,141 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block styling %}
+<div class="deck-detail-container">
+    <section class="deck-header-section mb-4">
+        <div class="aegyo-title">{{ deck.title }} - Flashcards</div>
+        
+        <div class="action-buttons mt-3">
+            <a href="{% url 'deck-detail' deck.pk %}" class="btn btn-cute btn-primary">
+                🔙 Back to Deck
+            </a>
+            {% if user == deck.owner or perms.decks.add_flashcard %}
+                <a href="{% url 'flashcard-add' deck.pk %}" class="btn btn-cute btn-secondary">
+                    ➕ Add Flashcard
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Flashcards List Section -->
+    <section>
+        <div class="section-title">
+            📚 All Flashcards
+            {% if page_obj %}
+                <span style="font-size: 0.9rem; font-weight: 400; color: #ff9aa2;">
+                    (Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }})
+                </span>
+            {% endif %}
+        </div>
+
+        {% if flashcards %}
+            <div class="flashcards-grid">
+                {% for flashcard in flashcards %}
+                    <div class="flashcard-preview" onclick="flipCard(this)">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <div class="flashcard-content">
+                                    {{ flashcard.question }}
+                                </div>
+                                <div class="flip-hint">
+                                    🔄 Click to flip
+                                </div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div class="flashcard-content">
+                                    {{ flashcard.answer }}
+                                </div>
+                                <div class="flip-hint">
+                                    🔄 Click to flip back
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if user == deck.owner or perms.decks.change_flashcard %}
+                            <div class="flashcard-actions">
+                                <a href="{% url 'flashcard-edit' deck_id=deck.pk pk=flashcard.id %}" 
+                                   class="action-btn" 
+                                   title="Edit">
+                                    ✏️
+                                </a>
+                                <a href="{% url 'flashcard-delete' deck_id=deck.pk pk=flashcard.id %}" 
+                                   class="action-btn" 
+                                   title="Delete">
+                                    🗑️
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <div class="text-center mt-4">
+                    <div class="pagination-container" style="background: white; border-radius: 50px; padding: 1rem; box-shadow: 0 4px 12px rgba(255, 154, 158, 0.15); display: inline-flex; align-items: center; gap: 1rem;">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1" class="btn btn-cute btn-secondary">
+                                ⏮️ First
+                            </a>
+                            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-cute btn-secondary">
+                                ⬅️ Previous
+                            </a>
+                        {% endif %}
+
+                        <span style="color: #ff6b81; font-weight: 600; padding: 0 1rem;">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-cute btn-secondary">
+                                Next ➡️
+                            </a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-cute btn-secondary">
+                                Last ⏭️
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-flashcards">
+                <div class="empty-icon">📚</div>
+                <h3>No Flashcards Yet!</h3>
+                <p>This deck doesn't have any flashcards yet. Time to add some knowledge!</p>
+                {% if user == deck.owner %}
+                    <a href="{% url 'flashcard-add' deck.pk %}" class="btn btn-cute btn-primary">
+                        ➕ Create First Flashcard
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- Quick Navigation -->
+    <section class="mt-4">
+        <div style="background: white; border-radius: 15px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(255, 154, 158, 0.15); text-align: center;">
+            <div class="decorative-hearts">♡ ♡ ♡</div>
+            <p style="color: #7d5a5a; margin-bottom: 1.5rem;">Ready to study these flashcards?</p>
+            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <a href="{% url 'dashboard' %}" class="btn btn-cute btn-secondary">
+                    🏠 Back to Dashboard
+                </a>
+                {% if flashcards %}
+                    <a href="#" class="btn btn-cute btn-primary">
+                        ✨ Start Studying ✨
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    function flipCard(card) {
+        card.classList.toggle('flipped');
+    }
+</script>
+{% endblock %}

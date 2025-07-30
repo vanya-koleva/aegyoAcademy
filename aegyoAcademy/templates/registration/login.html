@@ -1,0 +1,38 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+
+        <h1 class="aegyo-title text-center">Login to Aegyo Academy</h1>
+
+        <form method="post" class="register-form">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                {% for field in form %}
+                <div class="form-floating mb-3">
+                    {{ field }}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+                    {% if field.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ field.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="d-grid mb-4">
+                <button type="submit" class="btn btn-cute btn-primary">
+                    Login
+                </button>
+            </div>
+
+            <div class="text-center register-link">
+                <a href="{% url 'register' %}" class="cute-link">
+                    Don't have an account? Create one here
+                </a>
+            </div>
+        </form>
+
+{% endblock %}

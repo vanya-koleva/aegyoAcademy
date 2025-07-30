@@ -1,0 +1,23 @@
+{% extends 'common/base.html' %}
+
+
+{% block styling %}
+<div class="landing-container">
+    <div class="landing-content">
+        <div class="decorative-hearts">✧･ﾟ: *✧･ﾟ:* *:･ﾟ✧*:･ﾟ✧</div>
+
+        {% block content %}
+            <h1 class="landing-title">Aegyo Academy</h1>
+            <p class="landing-tagline">Master knowledge the elegant way — with stylish, smart flashcards designed for modern learning.</p>
+
+            <div class="btn-group">
+                <a href="{% url 'login' %}" class="btn btn-cute btn-primary">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-cute btn-secondary">Register</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-cute btn-primary">View Decks</a>
+            </div>
+        {% endblock %}
+
+        <div class="decorative-hearts">✧･ﾟ: *✧･ﾟ:* *:･ﾟ✧*:･ﾟ✧</div>
+    </div>
+</div>
+{% endblock %}

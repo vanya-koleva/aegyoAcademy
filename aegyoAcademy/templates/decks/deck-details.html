@@ -1,0 +1,70 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="deck-detail-container">
+    <!-- Deck Header -->
+    <div class="deck-header-section mb-4">
+        <div class="aegyo-title">{{ deck.title }}</div>
+        <div class="deck-meta">
+            <span class="deck-author">✧ Created by <strong>{{ deck.owner.username }}</strong></span>
+            <span class="deck-visibility ms-3">
+                {% if deck.is_public %}
+                    🌟 Public Deck
+                {% else %}
+                    🔒 Private Deck
+                {% endif %}
+            </span>
+        </div>
+        
+        <!-- Deck Tags -->
+        {% if deck.tags.all %}
+            <div class="deck-tags mt-3">
+                {% for tag in deck.tags.all %}
+                    <span class="cute-tag">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- Deck Stats -->
+        <div class="deck-stats-bar mt-3">
+            <div class="stat-item">
+                <span class="stat-value">{{ flashcards.count }}</span>
+                <span class="stat-label">Flashcards</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ deck.tags.count }}</span>
+                <span class="stat-label">Tags</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons mb-4">
+        {% if flashcards %}
+            <a href="#" class="btn btn-cute btn-primary me-2">
+                ✨ Study Deck ✨
+            </a>
+        {% endif %}
+        {% if deck.owner == request.user or perms.decks.change_deck %}
+            <a href="{% url 'flashcards-list' deck.pk %}" class="btn btn-cute btn-secondary me-2">
+                🔎 View Flashcards
+            </a>
+            <a href="{% url 'deck-edit' deck.pk %}" class="btn btn-cute btn-secondary">
+                ✏️ Edit Deck
+            </a>
+            <a href="{% url 'deck-delete' deck.pk %}" class="btn btn-cute btn-danger ms-2">
+                🗑️ Delete Deck
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Back to Dashboard -->
+    <div class="text-center mt-4">
+        <a href="{% url 'dashboard' %}" class="btn btn-cute btn-secondary">
+            ← Back to Dashboard
+        </a>
+    </div>
+</div>
+    
+{% endblock %}

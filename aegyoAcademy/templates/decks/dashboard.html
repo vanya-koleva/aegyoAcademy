@@ -1,0 +1,44 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+    
+    {% if request.user.is_authenticated %}
+    <!-- Owned Decks Section -->
+    <h2 class="aegyo-title text-center">My Decks</h2>
+    <div class="decks-grid">
+        {% for deck in owned_decks %}
+            <a href="{% url 'deck-detail' deck.id %}" class="deck-card-link-wrapper">
+                <div class="deck-card">
+                    <div class="deck-content">
+                        <h3 class="deck-title">{{ deck.title }}</h3>
+                    </div>
+                </div>
+            </a>
+        {% empty %}
+            <p>You haven't created any decks yet.</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Other Decks Section -->
+    <h2 class="aegyo-title text-center">
+        {% if perms.decks.view_deck %}All Decks{% else %}Public Decks{% endif %}
+    </h2>
+    <div class="decks-grid">
+        {% for deck in other_decks %}
+            <a href="{% url 'deck-detail' deck.id %}" class="deck-card-link-wrapper">
+                <div class="deck-card">
+                    <div class="deck-content">
+                        <h3 class="deck-title">{{ deck.title }}</h3>
+                            {% if perms.decks.view_deck and not deck.is_public %}
+                                <span class="badge bg-warning">Private</span>
+                            {% endif %}
+                    </div>
+                </div>
+            </a>
+        {% empty %}
+            <p>No decks available.</p>
+        {% endfor %}
+    </div>
+    
+{% endblock %}

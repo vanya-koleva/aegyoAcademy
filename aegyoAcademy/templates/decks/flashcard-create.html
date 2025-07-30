@@ -1,0 +1,134 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="flashcard-create-container">
+    <!-- Header Section -->
+    <div class="deck-info-header mb-4">
+        <div class="aegyo-title">✿ Add Flashcard ✿</div>
+        <div class="deck-reference">
+            <span class="deck-name">to "{{ deck.title }}"</span>
+            <div class="deck-meta mt-2">
+                <span class="flashcard-count">{{ deck.flashcards.count }} flashcards</span>
+                {% if deck.tags.all %}
+                    <span class="separator">•</span>
+                    <span class="tag-count">{{ deck.tags.count }} tags</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-container">
+        <form method="post" class="aegyo-form">
+            {% csrf_token %}
+            
+            <!-- Front Side -->
+            <div class="flashcard-side-container mb-4">
+                <div class="side-header">
+                    <h3 class="side-title">
+                        ✧ Front Side ✧
+                    </h3>
+                    <p class="side-description">What the learner will see first</p>
+                </div>
+                <div class="form-group">
+                    {{ form.question }}
+                    {% if form.question.errors %}
+                        <div class="error-messages">
+                            {% for error in form.question.errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="cute-help-text">
+                        ✨ This could be a question, word, or concept to learn
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Side -->
+            <div class="flashcard-side-container mb-4">
+                <div class="side-header">
+                    <h3 class="side-title">
+                        ✧ Back Side ✧
+                    </h3>
+                    <p class="side-description">The answer or explanation</p>
+                </div>
+                <div class="form-group">
+                    {{ form.answer }}
+                    {% if form.answer.errors %}
+                        <div class="error-messages">
+                            {% for error in form.answer.errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="cute-help-text">
+                        ✨ The answer, translation, or detailed explanation
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Difficulty Section -->
+            <div class="flashcard-side-container mb-4">
+                <div class="side-header">
+                    <h3 class="side-title">
+                        ✧ Difficulty Level ✧
+                    </h3>
+                    <p class="side-description">How challenging is this flashcard?</p>
+                </div>
+                <div class="form-group">
+                    <div class="difficulty-options">
+                        {{ form.difficulty }}
+                    </div>
+                    {% if form.difficulty.errors %}
+                        <div class="error-messages">
+                            {% for error in form.difficulty.errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="cute-help-text">
+                        ✨ Choose based on how easy or hard this concept is to remember
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'deck-detail' deck.pk %}" class="btn btn-cute btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-cute btn-primary">
+                    ✨ Create Flashcard ✨
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Quick Tips -->
+    <div class="tips-section mt-4">
+        <div class="tips-container">
+            <h4 class="tips-title">💡 Quick Tips</h4>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <span class="tip-emoji">📝</span>
+                    <span class="tip-text">Keep it concise and clear</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-emoji">🎯</span>
+                    <span class="tip-text">Focus on one concept per card</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-emoji">✨</span>
+                    <span class="tip-text">Use examples when helpful</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-emoji">🔄</span>
+                    <span class="tip-text">Make both sides meaningful</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

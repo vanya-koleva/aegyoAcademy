@@ -1,0 +1,91 @@
+    <!-- Title Field -->
+    <div class="mb-4">
+        <label for="{{ form.title.id_for_label }}" class="form-label fw-bold" style="color: #ff6b81;">
+            Deck Title
+        </label>
+        {{ form.title }}
+        {% if form.title.errors %}
+            <div class="text-danger mt-1">
+                {% for error in form.title.errors %}
+                    <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Existing Tags Field -->
+    <div class="mb-4">
+        <label for="{{ form.tags.id_for_label }}" class="form-label fw-bold" style="color: #ff6b81;">
+            Choose Existing Tags
+        </label>
+        <div class="tags-container" style="background: #fff9fb; border: 2px solid #ffd1dc; border-radius: 12px; padding: 1rem;">
+            {% if available_tags %}
+                <div class="row">
+                    {% for tag in available_tags %}
+                        <div class="col-md-6 col-lg-4 mb-2">
+                            <label class="tag-option" style="display: flex; align-items: center; cursor: pointer; padding: 0.5rem; border-radius: 8px; transition: all 0.3s ease;">
+                                <input type="checkbox" name="tags" value="{{ tag.id }}" style="margin-right: 0.5rem; accent-color: #ff9aa2;">
+                                <span style="color: #5a4a4f;">{{ tag.name }}</span>
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color: #ff9aa2; text-align: center; margin: 0;">No existing tags available. Create some new ones below! ✨</p>
+            {% endif %}
+        </div>
+        {% if form.tags.errors %}
+            <div class="text-danger mt-1">
+                {% for error in form.tags.errors %}
+                    <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- New Tags Field -->
+    <div class="mb-4">
+        <label for="{{ form.new_tags.id_for_label }}" class="form-label fw-bold" style="color: #ff6b81;">
+            Add New Tags
+        </label>
+        {{ form.new_tags }}
+        <div class="cute-help-text">
+            ✧ Separate multiple tags with commas (e.g., korean, beginner, vocabulary)
+        </div>
+        {% if form.new_tags.errors %}
+            <div class="text-danger mt-1">
+                {% for error in form.new_tags.errors %}
+                    <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Privacy Setting -->
+    <div class="mb-4">
+        <div class="privacy-container" style="background: #fff9fb; border: 2px solid #ffd1dc; border-radius: 12px; padding: 1.5rem; text-align: center;">
+            <label class="form-label fw-bold" style="color: #ff6b81; display: block; margin-bottom: 1rem;">
+                Deck Privacy
+            </label>
+            <div class="privacy-options" style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                <label class="privacy-option" style="display: flex; align-items: center; cursor: pointer; padding: 0.75rem 1.5rem; border-radius: 25px; background: white; border: 2px solid #ffd1dc; transition: all 0.3s ease;">
+                    <input type="radio" name="is_public" value="False" {% if not form.is_public.value %}checked{% endif %} style="margin-right: 0.5rem; accent-color: #ff9aa2;">
+                    <span style="color: #5a4a4f; font-weight: 500;">🔒 Private</span>
+                </label>
+                <label class="privacy-option" style="display: flex; align-items: center; cursor: pointer; padding: 0.75rem 1.5rem; border-radius: 25px; background: white; border: 2px solid #ffd1dc; transition: all 0.3s ease;">
+                    <input type="radio" name="is_public" value="True" {% if form.is_public.value %}checked{% endif %} style="margin-right: 0.5rem; accent-color: #ff9aa2;">
+                    <span style="color: #5a4a4f; font-weight: 500;">🌟 Public</span>
+                </label>
+            </div>
+            <div class="cute-help-text mt-2">
+                ✧ Private decks are only visible to you, public decks can be seen by everyone
+            </div>
+        </div>
+        {% if form.is_public.errors %}
+            <div class="text-danger mt-1">
+                {% for error in form.is_public.errors %}
+                    <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>

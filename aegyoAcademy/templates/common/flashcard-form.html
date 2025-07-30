@@ -1,0 +1,70 @@
+<!-- Front Side -->
+            <div class="flashcard-side-container mb-4">
+                <div class="side-header">
+                    <h3 class="side-title">
+                        ✧ Front Side ✧
+                    </h3>
+                    <p class="side-description">What the learner will see first</p>
+                </div>
+                <div class="form-group">
+                    {{ form.question }}
+                    {% if form.question.errors %}
+                        <div class="error-messages">
+                            {% for error in form.question.errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="cute-help-text">
+                        ✨ This could be a question, word, or concept to learn
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Side -->
+            <div class="flashcard-side-container mb-4">
+                <div class="side-header">
+                    <h3 class="side-title">
+                        ✧ Back Side ✧
+                    </h3>
+                    <p class="side-description">The answer or explanation</p>
+                </div>
+                <div class="form-group">
+                    {{ form.answer }}
+                    {% if form.answer.errors %}
+                        <div class="error-messages">
+                            {% for error in form.answer.errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="cute-help-text">
+                        ✨ The answer, translation, or detailed explanation
+                    </div>
+                </div>
+            </div>
+
+            <!-- Difficulty Section -->
+            <div class="flashcard-side-container mb-4">
+                <div class="side-header">
+                    <h3 class="side-title">
+                        ✧ Difficulty Level ✧
+                    </h3>
+                    <p class="side-description">How challenging is this flashcard?</p>
+                </div>
+                <div class="form-group">
+                    <div class="difficulty-options">
+                        {{ form.difficulty }}
+                    </div>
+                    {% if form.difficulty.errors %}
+                        <div class="error-messages">
+                            {% for error in form.difficulty.errors %}
+                                <div class="error-message">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="cute-help-text">
+                        ✨ Choose based on how easy or hard this concept is to remember
+                    </div>
+                </div>
+            </div>

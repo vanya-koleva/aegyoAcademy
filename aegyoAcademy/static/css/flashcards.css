@@ -1,0 +1,262 @@
+/* Flashcard Create Specific Styles */
+.flashcard-create-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.deck-info-header {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(255, 154, 158, 0.15);
+    text-align: center;
+}
+
+.deck-reference {
+    margin-top: 1rem;
+}
+
+.deck-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #ff6b81;
+    font-style: italic;
+}
+
+.deck-meta {
+    color: #ff9aa2;
+    font-size: 0.95rem;
+}
+
+.separator {
+    margin: 0 0.5rem;
+    color: #ffd1dc;
+}
+
+.form-container {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 25px rgba(255, 154, 158, 0.15);
+}
+
+.flashcard-side-container {
+    background: #fff9fb;
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 2px solid #ffd1dc;
+    transition: all 0.3s ease;
+}
+
+.flashcard-side-container:hover {
+    border-color: #ff9aa2;
+    box-shadow: 0 4px 15px rgba(255, 154, 158, 0.1);
+}
+
+.side-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.side-title {
+    color: #ff6b81;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.side-description {
+    color: #7d5a5a;
+    font-size: 0.9rem;
+    margin: 0;
+    font-style: italic;
+}
+
+.form-group textarea {
+    width: 100%;
+    min-height: 120px;
+    background: white;
+    border: 2px solid #ffd1dc;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    color: #5a4a4f;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #ff9aa2;
+    box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.2);
+}
+
+.error-messages {
+    margin-top: 0.5rem;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.flashcard-preview-section {
+    background: #fff9fb;
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 2px dashed #ffd1dc;
+}
+
+.preview-title {
+    text-align: center;
+    color: #ff6b81;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.flashcard-preview-container {
+    display: flex;
+    justify-content: center;
+}
+
+.flashcard-preview-card {
+    width: 350px;
+    height: 200px;
+    cursor: pointer;
+    perspective: 1000px;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flashcard-preview-card.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(255, 154, 158, 0.15);
+    backface-visibility: hidden;
+}
+
+.flashcard-front {
+    background: linear-gradient(135deg, #ff9aa2, #ffd1dc);
+    color: white;
+}
+
+.flashcard-back {
+    background: linear-gradient(135deg, #ffd1dc, #fff9fb);
+    color: #5a4a4f;
+    transform: rotateY(180deg);
+}
+
+.preview-content {
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-text {
+    font-style: italic;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.flip-hint {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.tips-section {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 25px rgba(255, 154, 158, 0.15);
+}
+
+.tips-title {
+    text-align: center;
+    color: #ff6b81;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: #fff9fb;
+    border-radius: 10px;
+    border: 1px solid #ffd1dc;
+}
+
+.tip-emoji {
+    font-size: 1.2rem;
+    margin-right: 0.75rem;
+}
+
+.tip-text {
+    color: #5a4a4f;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .flashcard-preview-card {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-actions .btn {
+        width: 200px;
+    }
+
+    .tips-grid {
+        grid-template-columns: 1fr;
+    }
+}
