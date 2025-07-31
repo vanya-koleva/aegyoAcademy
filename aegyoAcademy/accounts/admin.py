@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+
+from decks.models import Flashcard, Deck
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import Profile
 
@@ -33,4 +35,14 @@ admin.site.register(CustomUser, CustomUserAdmin)
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user', 'first_name', 'last_name', 'deck_count', 'card_count')
+
+    def deck_count(self, obj):
+        return Deck.objects.filter(owner=obj.user).count()
+
+    deck_count.short_description = 'Decks'
+
+    def card_count(self, obj):
+        return Flashcard.objects.filter(deck__owner=obj.user).count()
+
+    card_count.short_description = 'Cards'

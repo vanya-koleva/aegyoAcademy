@@ -1,0 +1,131 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Header Section -->
+    <div class="profile-header mb-4">
+        <div class="aegyo-title">✿ My Profile ✿</div>
+        <div class="profile-welcome">
+            Welcome back, {{ user.username }}! 
+        </div>
+    </div>
+
+    <!-- Profile Form Section -->
+    <div class="profile-form-container">
+        <form method="post" enctype="multipart/form-data" class="aegyo-form">
+            {% csrf_token %}
+            
+            <!-- Profile Image Section -->
+            <div class="profile-image-section mb-4">
+                <div class="current-image-container">
+                    {% if profile.image %}
+                        <img src="{{ profile.image }}" alt="Profile Image" class="current-profile-image">
+                    {% else %}
+                        <div class="no-image-placeholder">
+                            <span class="placeholder-icon">👤</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+            <!-- Name Fields Section -->
+            <div class="name-fields-container mb-4">
+                <div class="side-header">
+                    <h3 class="side-title">✧ Personal Information ✧</h3>
+                    <p class="side-description">Your profile information</p>
+                </div>
+                
+                <div class="name-display-grid">
+                    <!-- First Name Display -->
+                    <div class="info-display-item">
+                        <span class="info-label">First Name:</span>
+                        <span class="info-value">
+                            {% if profile.first_name %}
+                                {{ profile.first_name }}
+                            {% else %}
+                                <span class="not-set">Not set</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Last Name Display -->
+                    <div class="info-display-item">
+                        <span class="info-label">Last Name:</span>
+                        <span class="info-value">
+                            {% if profile.last_name %}
+                                {{ profile.last_name }}
+                            {% else %}
+                                <span class="not-set">Not set</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="edit-suggestion">
+                    <a href="#" class="btn btn-cute btn-secondary btn-sm">
+                        ✏️ Edit Profile Information
+                    </a>
+                </div>
+            </div>
+
+            <!-- Account Stats Section -->
+            <div class="profile-stats-section mb-4">
+                <div class="side-header">
+                    <h3 class="side-title">✧ Your Learning Journey ✧</h3>
+                    <p class="side-description">Look at all your amazing progress!</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value">{{ deck_count }}</div>
+                        <div class="stat-label">Decks Created</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">🎴</div>
+                        <div class="stat-value">{{ card_count }}</div>
+                        <div class="stat-label">Cards Created</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-value">{{ user.date_joined|date:"M d, Y" }}</div>
+                        <div class="stat-label">Member Since</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Information Section -->
+            <div class="account-info-section mb-4">
+                <div class="side-header">
+                    <h3 class="side-title">✧ Account Details ✧</h3>
+                    <p class="side-description">Your account information</p>
+                </div>
+                
+                <div class="account-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Username:</span>
+                        <span class="detail-value">{{ user.username }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email:</span>
+                        <span class="detail-value">{{ user.email }}</span>
+                    </div>
+                </div>
+                
+                <div class="cute-help-text text-center">
+                    ✨ Want to change your username or email? Contact support!
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'dashboard' %}" class="btn btn-cute btn-secondary">
+                    🏠 Back to Dashboard
+                </a>
+            </div>
+        </form>
+    </div>
+    
+{% endblock %}

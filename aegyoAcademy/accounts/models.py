@@ -60,14 +60,6 @@ class Profile(models.Model):
         primary_key=True,
     )
 
-    created_decks = models.IntegerField(
-        default=0,
-    )
-
-    created_cards = models.IntegerField(
-        default=0,
-    )
-
     def __str__(self):
         if self.first_name and self.last_name:
             return f'{self.first_name} {self.last_name}'
