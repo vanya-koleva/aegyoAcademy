@@ -1,8 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
+from django.views.generic import CreateView, DetailView, UpdateView
 
-from accounts.forms import CustomUserCreationForm
+from accounts.forms import CustomUserCreationForm, ProfileEditForm
 from accounts.models import Profile
 from decks.models import Deck, Flashcard
 
@@ -30,3 +30,13 @@ class ViewProfile(LoginRequiredMixin, DetailView):
         context['card_count'] = Flashcard.objects.filter(deck__owner=user).count()
 
         return context
+
+
+class EditProfile(LoginRequiredMixin, UpdateView):
+    model = Profile
+    form_class = ProfileEditForm
+    template_name = 'registration/profile-edit.html'
+    success_url = reverse_lazy('view-profile')
+
+    def get_object(self, queryset=None):
+        return self.request.user.profile

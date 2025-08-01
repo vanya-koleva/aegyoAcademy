@@ -1,0 +1,149 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="edit-profile-container">
+    <!-- Header Section -->
+    <div class="edit-profile-header mb-4">
+        <div class="aegyo-title">✿ Edit Profile ✿</div>
+        <div class="profile-subtitle">
+            Update your personal information, {{ user.username }}!
+        </div>
+    </div>
+
+    <!-- Edit Form Section -->
+    <div class="edit-form-container">
+        <form method="post" enctype="multipart/form-data" class="aegyo-form">
+            {% csrf_token %}
+            
+            <!-- Edit Profile Picture Section -->
+            <div class="edit-image-section mb-4">
+                <div class="section-header">
+                    <h3 class="section-title">✧ Profile Picture ✧</h3>
+                    <p class="section-description">Update your profile image</p>
+                </div>
+                
+                <div class="image-edit-container">
+                    <div class="current-image-display">
+                        {% if user.profile.image %}
+                            <img src="{{ user.profile.image.url }}" alt="Current Profile Image" class="current-edit-image">
+                            <div class="image-status">Current Image</div>
+                        {% else %}
+                            <div class="no-image-display">
+                                <span class="no-image-icon">👤</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="image-upload-controls">
+                        <label for="{{ form.image.id_for_label }}" class="form-label fw-bold" style="color: #ff6b81;">
+                            <span class="label-icon">📷</span> Choose New Image
+                        </label>
+                        <label for="{{ form.image.id_for_label }}" class="cute-file-label">
+                            <i>📸</i> Browse Images
+                        </label>
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                            <div class="error-messages">
+                                {% for error in form.image.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                            {% if user.profile.image %}
+                                <div class="clear-image-option">
+                                    <label class="clear-checkbox">
+                                        {{ form.clear_image }}
+                                        <span class="checkmark"></span>
+                                        Remove current image
+                                    </label>
+                                </div>
+                            {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Name Fields Section -->
+            <div class="edit-fields-container mb-4">
+                <div class="section-header">
+                    <h3 class="section-title">✧ Personal Information ✧</h3>
+                    <p class="section-description">Update your name to personalize your profile</p>
+                </div>
+                
+                <div class="name-fields-grid">
+                    <!-- First Name -->
+                    <div class="form-group">
+                        <label for="{{ form.first_name.id_for_label }}" class="form-label fw-bold" style="color: #ff6b81;">
+                            <span class="label-icon">✨</span> First Name
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="error-messages">
+                                {% for error in form.first_name.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="cute-help-text">
+                            Your first name (optional)
+                        </div>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="form-group">
+                        <label for="{{ form.last_name.id_for_label }}" class="form-label fw-bold" style="color: #ff6b81;">
+                            <span class="label-icon">✨</span> Last Name
+                        </label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="error-messages">
+                                {% for error in form.last_name.errors %}
+                                    <div class="error-message">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="cute-help-text">
+                            Your last name (optional)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'view-profile' %}" class="btn btn-cute btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-cute btn-primary">
+                    ✨ Save All Changes ✨
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Quick Tips -->
+    <div class="tips-section mt-4">
+        <div class="tips-container">
+            <h4 class="tips-title">💡 Profile Tips</h4>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <span class="tip-emoji">📸</span>
+                    <span class="tip-text">Profile pictures help personalize your account</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-emoji">🎯</span>
+                    <span class="tip-text">Your name appears on your profile and in social features</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-emoji">🔒</span>
+                    <span class="tip-text">Your personal information is kept private and secure</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-emoji">✨</span>
+                    <span class="tip-text">All profile fields are optional</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

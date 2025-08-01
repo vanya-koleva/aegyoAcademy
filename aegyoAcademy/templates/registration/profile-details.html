@@ -20,13 +20,14 @@
             <div class="profile-image-section mb-4">
                 <div class="current-image-container">
                     {% if profile.image %}
-                        <img src="{{ profile.image }}" alt="Profile Image" class="current-profile-image">
+                        <img src="{{ profile.image.url }}" alt="Profile Image" class="current-profile-image">
                     {% else %}
                         <div class="no-image-placeholder">
                             <span class="placeholder-icon">👤</span>
                         </div>
                     {% endif %}
                 </div>
+            </div>
 
             <!-- Name Fields Section -->
             <div class="name-fields-container mb-4">
@@ -62,7 +63,7 @@
                 </div>
                 
                 <div class="edit-suggestion">
-                    <a href="#" class="btn btn-cute btn-secondary btn-sm">
+                    <a href="{% url 'edit-profile' %}" class="btn btn-cute btn-secondary btn-sm">
                         ✏️ Edit Profile Information
                     </a>
                 </div>
@@ -127,5 +128,5 @@
             </div>
         </form>
     </div>
-    
+</div>
 {% endblock %}
