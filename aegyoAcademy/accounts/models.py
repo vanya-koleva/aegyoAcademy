@@ -64,3 +64,18 @@ class Profile(models.Model):
         if self.first_name and self.last_name:
             return f'{self.first_name} {self.last_name}'
         return 'user'
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            try:
+                old_profile = Profile.objects.get(pk=self.pk)
+                if old_profile.image and old_profile.image != self.image:
+                    old_profile.image.delete(save=False)
+            except Profile.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.image:
+            self.image.delete(save=False)
+        super().delete(*args, **kwargs)

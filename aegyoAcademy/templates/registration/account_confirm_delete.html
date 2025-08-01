@@ -1,0 +1,37 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="delete-account-container">
+    <!-- Header Section -->
+    <div class="delete-account-header mb-4">
+        <div class="aegyo-title">❌ Delete Account ❌</div>
+        <div class="profile-subtitle">
+            Are you sure you want to delete your account, {{ user.username }}?
+        </div>
+    </div>
+
+    <!-- Warning Message -->
+    <div class="warning-section mb-4 p-4 rounded" style="background-color: #ffebee; border: 1px solid #ffcdd2;">
+        <h4 class="warning-title">⚠️ Permanent Action Warning</h4>
+        <ul class="warning-list mt-3">
+            <li>All your decks, flashcards, and progress will be permanently deleted</li>
+            <li>This action cannot be undone</li>
+            <li>Your username will be immediately released</li>
+        </ul>
+    </div>
+
+    <!-- Confirmation Form -->
+    <form method="post">
+        {% csrf_token %}
+        <div class="confirmation-actions mt-4">
+            <a href="{% url 'edit-profile' %}" class="btn btn-cute btn-secondary">
+                ✨ Cancel & Keep Account ✨
+            </a>
+            <button type="submit" class="btn btn-cute btn-danger">
+                💔 Permanently Delete My Account 💔
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

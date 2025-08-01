@@ -44,7 +44,8 @@ class ProfileEditForm(BaseProfileForm):
         profile = super().save(commit=False)
 
         if self.cleaned_data.get('clear_image') and profile.image:
-            profile.image = None  # Uses signal to handle file deletion
+            profile.image.delete(save=False)
+            profile.image = None
 
         if commit:
             profile.save()
