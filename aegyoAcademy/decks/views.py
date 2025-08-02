@@ -1,9 +1,16 @@
-from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+import random
+
+from django.contrib import messages
+from django.db import transaction
+
+from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
+from django.views import View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.db.models import Q
-from .models import Tag, Deck, Flashcard
+from .models import Tag, Deck, Flashcard, StudySession, StudySessionCard
 from decks.forms import SearchForm, DeckCreateForm, FlashcardCreateForm, DeckEditForm, FlashcardEditForm
 
 
@@ -201,3 +208,121 @@ class FlashcardDeleteView(LoginRequiredMixin, DeleteView, PermissionRequiredMixi
 
     def get_success_url(self):
         return reverse_lazy('flashcards-list', kwargs={'deck_id': self.deck.id})
+
+
+class StudySessionStartView(LoginRequiredMixin, View):
+    def get(self, request, deck_id):
+        deck = get_object_or_404(Deck, pk=deck_id)
+        flashcards = list(deck.flashcards.all())
+
+        if not flashcards:
+            messages.warning(request, "This deck has no flashcards to study.")
+            return redirect('deck-detail', pk=deck_id)
+
+        session = StudySession.objects.create(
+            deck=deck,
+            user=request.user,
+            total_cards=len(flashcards)
+        )
+
+        random.shuffle(flashcards)
+
+        request.session['current_study_session'] = {
+            'session_id': session.id,
+            'current_card_index': 0,
+            'flashcard_ids': [f.id for f in flashcards],
+            'known_count': 0,
+            'unknown_count': 0
+        }
+
+        return redirect('study-session-card', deck_id=deck_id)
+
+
+class StudySessionCardView(LoginRequiredMixin, TemplateView):
+    template_name = 'decks/study_session_card.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        deck_id = self.kwargs['deck_id']
+        session_data = self.request.session.get('current_study_session')
+
+        if not session_data:
+            return redirect('deck-detail', pk=deck_id)
+
+        current_index = session_data['current_card_index']
+        flashcard_id = session_data['flashcard_ids'][current_index]
+        flashcard = Flashcard.objects.get(id=flashcard_id)
+
+        context.update({
+            'deck': Deck.objects.get(id=deck_id),
+            'flashcard': flashcard,
+            'current_index': current_index + 1,
+            'total_cards': len(session_data['flashcard_ids'])
+        })
+        return context
+
+
+class StudySessionAnswerView(LoginRequiredMixin, View):
+    def post(self, request, deck_id):
+        session_data = request.session.get('current_study_session')
+        if not session_data:
+            return redirect('deck-detail', pk=deck_id)
+
+        current_index = session_data['current_card_index']
+        flashcard_id = session_data['flashcard_ids'][current_index]
+        flashcard = Flashcard.objects.get(id=flashcard_id)
+        was_known = request.POST.get('was_known') == 'true'
+
+        with transaction.atomic():
+            session = StudySession.objects.get(id=session_data['session_id'])
+            StudySessionCard.objects.create(
+                session=session,
+                flashcard=flashcard,
+                was_known=was_known
+            )
+
+            difficulty_map = {
+                'H': 'M',  # Hard becomes Medium
+                'M': 'E',  # Medium becomes Easy
+                'E': 'P',  # Easy becomes Perfect
+                'P': 'P'  # Perfect remains Perfect
+            } if was_known else {
+                'P': 'E',  # Perfect becomes Easy
+                'E': 'M',  # Easy becomes Medium
+                'M': 'H',  # Medium becomes Hard
+                'H': 'H'  # Hard remains Hard
+            }
+
+            flashcard.difficulty = difficulty_map.get(
+                flashcard.difficulty, flashcard.difficulty
+            )
+            flashcard.save()
+
+            if was_known:
+                session.known_cards += 1
+                session_data['known_count'] += 1
+            else:
+                session.unknown_cards += 1
+                session_data['unknown_count'] += 1
+            session.save()
+
+        next_index = current_index + 1
+        if next_index < len(session_data['flashcard_ids']):
+            session_data['current_card_index'] = next_index
+            request.session.modified = True
+            return redirect('study-session-card', deck_id=deck_id)
+        else:
+            session.completed_at = timezone.now()
+            session.save()
+            del request.session['current_study_session']
+            return redirect('study-session-results', session_id=session.id)
+
+
+class StudySessionResultsView(LoginRequiredMixin, DetailView):
+    model = StudySession
+    template_name = 'decks/study_session_results.html'
+    context_object_name = 'session'
+    pk_url_kwarg = 'session_id'
+
+    def get_queryset(self):
+        return StudySession.objects.filter(user=self.request.user)

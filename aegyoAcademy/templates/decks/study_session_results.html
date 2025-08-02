@@ -1,0 +1,246 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="results-container">
+    <!-- Results Header -->
+    <div class="results-header mb-4">
+        <div class="completion-badge">
+            <div class="badge-icon">🎉</div>
+            <div class="aegyo-title">Study Session Complete!</div>
+            <div class="completion-message">Great job studying {{ session.deck.title }}!</div>
+        </div>
+    </div>
+
+    <!-- Performance Summary -->
+    <div class="performance-summary mb-4">
+        <div class="summary-header">
+            <h3>📊 Your Performance</h3>
+            <div class="session-date">
+                Completed on {{ session.completed_at|date:"F j, Y \a\t g:i A" }}
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <!-- Total Cards -->
+            <div class="stat-card total-cards">
+                <div class="stat-icon">📚</div>
+                <div class="stat-value">{{ session.total_cards }}</div>
+                <div class="stat-label">Total Cards</div>
+            </div>
+
+            <!-- Known Cards -->
+            <div class="stat-card known-cards">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">{{ session.known_cards }}</div>
+                <div class="stat-label">Known</div>
+                <div class="stat-percentage">{{ session.known_percentage }}%</div>
+            </div>
+
+            <!-- Unknown Cards -->
+            <div class="stat-card unknown-cards">
+                <div class="stat-icon">❌</div>
+                <div class="stat-value">{{ session.unknown_cards }}</div>
+                <div class="stat-label">Need Practice</div>
+                <div class="stat-percentage">{{ session.unknown_percentage }}%</div>
+            </div>
+
+            <!-- Study Time -->
+            <div class="stat-card study-time">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-value">
+                    {% with session.completed_at|timeuntil:session.started_at as duration %}
+                        {{ duration|slice:":5" }}
+                    {% endwith %}
+                </div>
+                <div class="stat-label">Study Time</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Message -->
+    <div class="performance-message mb-4">
+        {% if session.known_percentage >= 90 %}
+            <div class="message-card excellent">
+                <div class="message-icon">🌟</div>
+                <div class="message-content">
+                    <h4>Excellent Work!</h4>
+                    <p>You knew {{ session.known_percentage }}% of the cards! You've mastered this deck. Consider reviewing it less frequently or moving to more challenging material.</p>
+                </div>
+            </div>
+        {% elif session.known_percentage >= 70 %}
+            <div class="message-card good">
+                <div class="message-icon">👏</div>
+                <div class="message-content">
+                    <h4>Great Progress!</h4>
+                    <p>You knew {{ session.known_percentage }}% of the cards! You're doing well. Keep practicing the cards you missed to improve your retention.</p>
+                </div>
+            </div>
+        {% elif session.known_percentage >= 50 %}
+            <div class="message-card okay">
+                <div class="message-icon">💪</div>
+                <div class="message-content">
+                    <h4>Keep Going!</h4>
+                    <p>You knew {{ session.known_percentage }}% of the cards. There's room for improvement! Regular practice will help you remember more cards.</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="message-card needs-work">
+                <div class="message-icon">📖</div>
+                <div class="message-content">
+                    <h4>More Practice Needed</h4>
+                    <p>You knew {{ session.known_percentage }}% of the cards. Don't worry - this is normal when learning new material! Try studying this deck more frequently for better results.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Detailed Session Cards -->
+    {% if session.session_cards.exists %}
+    <div class="session-details mb-4">
+        <div class="details-header">
+            <h4>🔍 Detailed Results</h4>
+            <p class="details-subtitle">Review how you performed on each card</p>
+        </div>
+        
+        <div class="cards-review">
+            <div class="review-tabs">
+                <button class="tab-button active" onclick="showTab('all')">All Cards ({{ session.total_cards }})</button>
+                <button class="tab-button" onclick="showTab('known')">Known ({{ session.known_cards }})</button>
+                <button class="tab-button" onclick="showTab('unknown')">Need Practice ({{ session.unknown_cards }})</button>
+            </div>
+            
+            <div class="tab-content">
+                <div id="all-tab" class="tab-pane active">
+                    <div class="cards-grid">
+                        {% for session_card in session.session_cards.all %}
+                        <div class="card-result {% if session_card.was_known %}known{% else %}unknown{% endif %}">
+                            <div class="result-indicator">
+                                {% if session_card.was_known %}✅{% else %}❌{% endif %}
+                            </div>
+                            <div class="card-preview">
+                                <div class="card-question">{{ session_card.flashcard.question|truncatechars:50 }}</div>
+                                <div class="card-difficulty">
+                                    <span class="difficulty-badge difficulty-{{ session_card.flashcard.difficulty|lower }}">
+                                        {% if session_card.flashcard.difficulty == 'P' %}Perfect
+                                        {% elif session_card.flashcard.difficulty == 'E' %}Easy
+                                        {% elif session_card.flashcard.difficulty == 'M' %}Medium
+                                        {% elif session_card.flashcard.difficulty == 'H' %}Hard
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div id="known-tab" class="tab-pane">
+                    <div class="cards-grid">
+                        {% for session_card in session.session_cards.all %}
+                        {% if session_card.was_known %}
+                        <div class="card-result known">
+                            <div class="result-indicator">✅</div>
+                            <div class="card-preview">
+                                <div class="card-question">{{ session_card.flashcard.question|truncatechars:50 }}</div>
+                                <div class="card-difficulty">
+                                    <span class="difficulty-badge difficulty-{{ session_card.flashcard.difficulty|lower }}">
+                                        {% if session_card.flashcard.difficulty == 'P' %}Perfect
+                                        {% elif session_card.flashcard.difficulty == 'E' %}Easy
+                                        {% elif session_card.flashcard.difficulty == 'M' %}Medium
+                                        {% elif session_card.flashcard.difficulty == 'H' %}Hard
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div id="unknown-tab" class="tab-pane">
+                    <div class="cards-grid">
+                        {% for session_card in session.session_cards.all %}
+                        {% if not session_card.was_known %}
+                        <div class="card-result unknown">
+                            <div class="result-indicator">❌</div>
+                            <div class="card-preview">
+                                <div class="card-question">{{ session_card.flashcard.question|truncatechars:50 }}</div>
+                                <div class="card-difficulty">
+                                    <span class="difficulty-badge difficulty-{{ session_card.flashcard.difficulty|lower }}">
+                                        {% if session_card.flashcard.difficulty == 'P' %}Perfect
+                                        {% elif session_card.flashcard.difficulty == 'E' %}Easy
+                                        {% elif session_card.flashcard.difficulty == 'M' %}Medium
+                                        {% elif session_card.flashcard.difficulty == 'H' %}Hard
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{% url 'study-session-start' session.deck.id %}" class="btn btn-cute btn-primary">
+            🔄 Study Again
+        </a>
+        <a href="{% url 'deck-detail' session.deck.id %}" class="btn btn-cute btn-secondary">
+            📖 Back to Deck
+        </a>
+        <a href="{% url 'dashboard' %}" class="btn btn-cute btn-secondary">
+            🏠 Dashboard
+        </a>
+    </div>
+
+    <!-- Study Tips -->
+    <div class="study-tips mt-4">
+        <h4>💡 Study Tips</h4>
+        <div class="tips-grid">
+            <div class="tip-item">
+                <div class="tip-emoji">🎯</div>
+                <div class="tip-text">Focus extra attention on cards you missed</div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-emoji">🔄</div>
+                <div class="tip-text">Review regularly for better retention</div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-emoji">⏰</div>
+                <div class="tip-text">Study for short periods more frequently</div>
+            </div>
+            <div class="tip-item">
+                <div class="tip-emoji">📝</div>
+                <div class="tip-text">Try writing down answers before checking</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTab(tabName) {
+    // Hide all tab panes
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    tabPanes.forEach(pane => pane.classList.remove('active'));
+    
+    // Remove active class from all buttons
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => button.classList.remove('active'));
+    
+    // Show selected tab pane
+    document.getElementById(tabName + '-tab').classList.add('active');
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+}
+</script>
+
+{% endblock %}

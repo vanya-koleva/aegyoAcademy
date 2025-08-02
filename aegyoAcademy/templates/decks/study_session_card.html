@@ -1,0 +1,131 @@
+{% extends 'common/base.html' %}
+ {% load custom_filters %}
+
+{% block content %}
+<div class="study-session-container">
+    <!-- Session Header -->
+    <div class="session-header mb-4">
+        <div class="aegyo-title">Study Session</div>
+        <div class="session-meta">
+            <span class="deck-name">{{ deck.title }}</span>
+            <span class="separator">•</span>
+            <span class="card-progress">Card {{ current_index }} of {{ total_cards }}</span>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container mt-3">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ current_index|div:total_cards|multiply:100 }}%;"></div>
+            </div>
+            <div class="progress-text">{{ current_index|div:total_cards|multiply:100|floatformat:0 }}% Complete</div>
+        </div>
+    </div>
+
+    <!-- Flashcard Display -->
+    <div class="flashcard-study-container">
+        <div class="flashcard-study-card" id="flashcard" onclick="flipCard()">
+            <div class="flashcard-inner" id="flashcardInner">
+                <!-- Front Side (Question) -->
+                <div class="flashcard-front">
+                    <div class="card-label">Question</div>
+                    <div class="card-content">
+                        {{ flashcard.question }}
+                    </div>
+                    <div class="flip-instruction">
+                        ✨ Click to reveal answer ✨
+                    </div>
+                </div>
+                
+                <!-- Back Side (Answer) -->
+                <div class="flashcard-back">
+                    <div class="card-label">Answer</div>
+                    <div class="card-content">
+                        {{ flashcard.answer }}
+                    </div>
+                    <div class="difficulty-indicator">
+                        <span class="difficulty-label">Current Difficulty:</span>
+                        <span class="difficulty-badge difficulty-{{ flashcard.difficulty|lower }}">
+                            {% if flashcard.difficulty == 'P' %}Perfect
+                            {% elif flashcard.difficulty == 'E' %}Easy
+                            {% elif flashcard.difficulty == 'M' %}Medium
+                            {% elif flashcard.difficulty == 'H' %}Hard
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Answer Buttons (Initially Hidden) -->
+    <div class="answer-controls" id="answerControls" style="display: none;">
+        <div class="answer-question mb-3">
+            <h4>Did you know this answer?</h4>
+            <p class="text-muted">Your response will help adjust the difficulty level of this card.</p>
+        </div>
+        
+        <form method="post" action="{% url 'study-session-answer' deck.id %}" class="answer-form">
+            {% csrf_token %}
+            
+            <div class="answer-buttons">
+                <button type="submit" name="was_known" value="false" class="btn btn-cute btn-unknown">
+                    ❌ I didn't know it
+                </button>
+                <button type="submit" name="was_known" value="true" class="btn btn-cute btn-known">
+                    ✅ I knew it!
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Study Instructions -->
+    <div class="study-instructions mt-4">
+        <div class="instruction-card">
+            <h5>📚 How to Study</h5>
+            <ul class="instruction-list">
+                <li>🤔 Read the question carefully</li>
+                <li>💭 Think about your answer</li>
+                <li>👆 Click the card to reveal the answer</li>
+                <li>✅ Mark whether you knew it or not</li>
+                <li>🎯 Card difficulty adjusts based on your performance!</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Back to Deck Button -->
+    <div class="text-center mt-4">
+        <a href="{% url 'deck-detail' deck.id %}" class="btn btn-cute btn-secondary">
+            ← Back to Deck
+        </a>
+    </div>
+</div>
+
+<script>
+let cardFlipped = false;
+
+function flipCard() {
+    const flashcard = document.getElementById('flashcard');
+    const answerControls = document.getElementById('answerControls');
+    
+    if (!cardFlipped) {
+        flashcard.classList.add('flipped');
+        cardFlipped = true;
+        
+        setTimeout(() => {
+            answerControls.style.display = 'block';
+        }, 400);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.answer-form');
+    form.addEventListener('submit', function(e) {
+        if (!cardFlipped) {
+            e.preventDefault();
+            alert('Please flip the card to see the answer first!');
+        }
+    });
+});
+</script>
+
+{% endblock %}

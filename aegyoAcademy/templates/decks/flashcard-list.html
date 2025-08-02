@@ -124,7 +124,7 @@
                     🏠 Back to Dashboard
                 </a>
                 {% if flashcards %}
-                    <a href="#" class="btn btn-cute btn-primary">
+                    <a href="{% url 'study-session-start' deck.id %}" class="btn btn-cute btn-primary">
                         ✨ Start Studying ✨
                     </a>
                 {% endif %}
