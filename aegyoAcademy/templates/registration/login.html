@@ -20,6 +20,12 @@
                     {% endif %}
                 </div>
                 {% endfor %}
+
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                    Invalid username or password. Please try again.
+                    </div>
+                {% endif %}
             </div>
 
             <div class="d-grid mb-4">

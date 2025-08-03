@@ -9,12 +9,6 @@ class Tag(models.Model):
         unique=True,
     )
 
-    created_by = models.ForeignKey(
-        'accounts.AcademyUser',
-        null=True,
-        on_delete=models.SET_NULL,
-    )
-
     def __str__(self):
         return self.name
 
