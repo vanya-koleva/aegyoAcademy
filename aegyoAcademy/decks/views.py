@@ -10,6 +10,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.db.models import Q
+
+from .mixins import DeckAccessMixin
 from .models import Tag, Deck, Flashcard, StudySession, StudySessionCard
 from decks.forms import SearchForm, DeckCreateForm, FlashcardCreateForm, DeckEditForm, FlashcardEditForm
 
@@ -100,119 +102,126 @@ class DeckCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
-class DeckUpdateView(LoginRequiredMixin, UpdateView):
+class DeckUpdateView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, UpdateView):
     model = Deck
     form_class = DeckEditForm
     template_name = 'decks/deck-edit.html'
     success_url = reverse_lazy('dashboard')
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['available_tags'] = Tag.objects.all()
         return context
 
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_change_permission(self.request.user, deck)
 
-class DeckDeleteView(LoginRequiredMixin, DeleteView):
+
+class DeckDeleteView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, DeleteView):
     model = Deck
     success_url = reverse_lazy('dashboard')
 
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_delete_permission(self.request.user, deck)
 
-class FlashcardListView(ListView):
+
+class FlashcardListView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, ListView):
     model = Flashcard
     context_object_name = 'flashcards'
     template_name = 'decks/flashcard-list.html'
     paginate_by = 20
 
-    def dispatch(self, request, *args, **kwargs):
-        self.deck = get_object_or_404(Deck, pk=self.kwargs['deck_id'])
-        return super().dispatch(request, *args, **kwargs)
-
     def get_queryset(self):
-        return self.deck.flashcards.all()
+        return self.get_deck().flashcards.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['deck'] = self.deck
+        context['deck'] = self.get_deck()
         return context
 
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_view_permission(self.request.user, deck)
 
-class FlashcardCreateView(CreateView):
+
+class FlashcardCreateView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, CreateView):
     model = Flashcard
     form_class = FlashcardCreateForm
     template_name = 'decks/flashcard-create.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        self.deck = get_object_or_404(Deck, pk=self.kwargs['deck_id'])
-        return super().dispatch(request, *args, **kwargs)
-
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['deck'] = self.deck
+        kwargs['deck'] = self.get_deck()
         return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['deck'] = self.deck
+        context['deck'] = self.get_deck()
         return context
 
     def form_valid(self, form):
-        form.instance.deck = self.deck
+        form.instance.deck = self.get_deck()
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy('flashcards-list', kwargs={'deck_id': self.object.deck.id})
 
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_add_permission(self.request.user, deck)
 
-class FlashcardUpdateView(LoginRequiredMixin, UpdateView, PermissionRequiredMixin):
+
+class FlashcardUpdateView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, UpdateView):
     model = Flashcard
     form_class = FlashcardEditForm
     permission_required = 'decks.change_flashcard'
     template_name = 'decks/flashcard-edit.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        self.deck = get_object_or_404(Deck, pk=self.kwargs['deck_id'])
-        return super().dispatch(request, *args, **kwargs)
-
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['deck'] = self.deck
+        kwargs['deck'] = self.get_deck()
         return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['deck'] = self.deck
+        context['deck'] = self.get_deck()
         return context
 
     def form_valid(self, form):
-        form.instance.deck = self.deck
+        form.instance.deck = self.get_deck()
         return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy('flashcards-list', kwargs={'deck_id': self.object.deck.id})
 
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_change_permission(self.request.user, deck)
 
-class FlashcardDeleteView(LoginRequiredMixin, DeleteView, PermissionRequiredMixin):
+
+class FlashcardDeleteView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, DeleteView, PermissionRequiredMixin):
     model = Flashcard
     template_name = 'decks/flashcard_confirm_delete.html'
     permission_required = 'decks.delete_flashcard'
 
-    def dispatch(self, request, *args, **kwargs):
-        self.deck = get_object_or_404(Deck, pk=self.kwargs['deck_id'])
-        return super().dispatch(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['deck'] = self.deck
+        context['deck'] = self.get_deck()
         return context
 
     def get_success_url(self):
-        return reverse_lazy('flashcards-list', kwargs={'deck_id': self.deck.id})
+        return reverse_lazy('flashcards-list', kwargs={'deck_id': self.get_deck().id})
+
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_delete_permission(self.request.user, deck)
 
 
-class StudySessionStartView(LoginRequiredMixin, View):
+class StudySessionStartView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, View):
     def get(self, request, deck_id):
-        deck = get_object_or_404(Deck, pk=deck_id)
+        deck = self.get_deck()
         flashcards = list(deck.flashcards.all())
 
         if not flashcards:
@@ -237,32 +246,40 @@ class StudySessionStartView(LoginRequiredMixin, View):
 
         return redirect('study-session-card', deck_id=deck_id)
 
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_view_permission(self.request.user, deck)
 
-class StudySessionCardView(LoginRequiredMixin, TemplateView):
+
+class StudySessionCardView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, TemplateView):
     template_name = 'decks/study_session_card.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        deck_id = self.kwargs['deck_id']
+        deck = self.get_deck()
         session_data = self.request.session.get('current_study_session')
 
         if not session_data:
-            return redirect('deck-detail', pk=deck_id)
+            return redirect('deck-detail', pk=deck.id)
 
         current_index = session_data['current_card_index']
         flashcard_id = session_data['flashcard_ids'][current_index]
-        flashcard = Flashcard.objects.get(id=flashcard_id)
+        flashcard = get_object_or_404(Flashcard, id=flashcard_id)
 
         context.update({
-            'deck': Deck.objects.get(id=deck_id),
+            'deck': deck,
             'flashcard': flashcard,
             'current_index': current_index + 1,
-            'total_cards': len(session_data['flashcard_ids'])
+            'total_cards': len(session_data['flashcard_ids']),
         })
         return context
 
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_view_permission(self.request.user, deck)
 
-class StudySessionAnswerView(LoginRequiredMixin, View):
+
+class StudySessionAnswerView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, View):
     def post(self, request, deck_id):
         session_data = request.session.get('current_study_session')
         if not session_data:
@@ -317,12 +334,17 @@ class StudySessionAnswerView(LoginRequiredMixin, View):
             del request.session['current_study_session']
             return redirect('study-session-results', session_id=session.id)
 
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_view_permission(self.request.user, deck)
 
-class StudySessionResultsView(LoginRequiredMixin, DetailView):
+
+class StudySessionResultsView(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin, DetailView):
     model = StudySession
     template_name = 'decks/study_session_results.html'
     context_object_name = 'session'
     pk_url_kwarg = 'session_id'
 
-    def get_queryset(self):
-        return StudySession.objects.filter(user=self.request.user)
+    def test_func(self):
+        deck = self.get_deck()
+        return self.has_view_permission(self.request.user, deck)
