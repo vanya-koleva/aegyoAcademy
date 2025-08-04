@@ -14,7 +14,7 @@ UserModel = get_user_model()
 class RegisterView(CreateView):
     form_class = CustomUserCreationForm
     template_name = 'registration/register.html'
-    success_url = reverse_lazy('dashboard')
+    success_url = reverse_lazy('login')
     # Uses signal to create the profile
 
 
