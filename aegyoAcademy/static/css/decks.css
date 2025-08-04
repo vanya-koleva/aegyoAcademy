@@ -1,12 +1,14 @@
 .decks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
     gap: 25px;
-    margin-bottom: 50px;
+    margin-bottom: 25px;
 }
 
 .deck-card {
-    background: #ff6b81;
+    background: linear-gradient(135deg, #ff9aa2, #ffd1dc);
     border-radius: 20px;
     box-shadow: 0 8px 25px rgba(255, 154, 158, 0.15);
     transition: all 0.3s ease;
@@ -120,6 +122,6 @@
   text-decoration: none;
   color: inherit;
   display: inline-block;
-  width: 100%;
+  width: 25%;
   height: 100%;
 }

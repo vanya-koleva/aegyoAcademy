@@ -1,14 +1,22 @@
 {% extends 'common/base.html' %}
 
 {% block content %}
-    
+    <div class="dashboard-header mb-4">
+        <div class="aegyo-title">✨ Study Dashboard ✨</div>
+        {% if request.user.is_authenticated %}
+            <div class="dashboard-welcome">
+                Welcome back, {{ request.user.username }}!
+            </div>
+        {% endif %}
+    </div>
+
     <div class="search-container mb-4">
         <form method="GET">
             {{ search_form.query }}
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
     </div>
-    
+
     {% if request.user.is_authenticated %}
     <!-- Owned Decks Section -->
     <h2 class="aegyo-title text-center">My Decks</h2>
@@ -26,7 +34,7 @@
         {% endfor %}
     </div>
     {% endif %}
-    
+
     <!-- Other Decks Section -->
     <h2 class="aegyo-title text-center">
         {% if perms.decks.view_deck %}All Decks{% else %}Public Decks{% endif %}
@@ -47,5 +55,4 @@
             <p>No decks available.</p>
         {% endfor %}
     </div>
-    
 {% endblock %}
