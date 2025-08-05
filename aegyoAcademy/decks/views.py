@@ -217,7 +217,7 @@ class StudySessionCardView(StudySessionBaseMixin, TemplateView):
         return context
 
 
-class StudySessionAnswerView(StudySessionBaseMixin, View):
+class StudySessionAnswerView(StudySessionBaseMixin, DeckContextMixin, View):
     def post(self, request, deck_id):
         session_data = self.get_session_data()
         if not session_data:
@@ -248,10 +248,11 @@ class StudySessionAnswerView(StudySessionBaseMixin, View):
                 'H': 'H'  # Hard remains Hard
             }
 
-            flashcard.difficulty = difficulty_map.get(
-                flashcard.difficulty, flashcard.difficulty
-            )
-            flashcard.save()
+            if self.get_deck().owner == request.user:
+                flashcard.difficulty = difficulty_map.get(
+                    flashcard.difficulty, flashcard.difficulty
+                )
+                flashcard.save()
 
             if was_known:
                 session.known_cards += 1

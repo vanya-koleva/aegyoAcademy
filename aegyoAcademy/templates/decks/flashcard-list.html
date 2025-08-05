@@ -125,7 +125,7 @@
                 <a href="{% url 'dashboard' %}" class="btn btn-cute btn-secondary">
                     🏠 Back to Dashboard
                 </a>
-                {% if flashcards and user == deck.owner %}
+                {% if flashcards and user == deck.owner or perms.decks.change_deck %}
                     <a href="{% url 'study-session-start' deck.id %}" class="btn btn-cute btn-primary">
                         ✨ Start Studying ✨
                     </a>

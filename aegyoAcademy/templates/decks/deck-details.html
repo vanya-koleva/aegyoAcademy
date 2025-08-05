@@ -41,7 +41,7 @@
 
     <!-- Action Buttons -->
     <div class="action-buttons mb-4">
-        {% if flashcards and deck.owner == request.user %}
+        {% if flashcards and deck.owner == request.user or perms.decks.change_deck %}
             <a href="{% url 'study-session-start' deck.id %}" class="btn btn-cute btn-primary me-2">
                 ✨ Study Deck ✨
             </a>
