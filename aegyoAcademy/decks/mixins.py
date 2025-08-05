@@ -2,7 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
-from decks.models import Deck
+from decks.models import Deck, Tag
+
 
 class DeckAccessMixin:
     deck_url_kwarg = 'deck_id'
