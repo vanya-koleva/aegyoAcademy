@@ -89,7 +89,7 @@ class FlashcardFormMixin:
 class StudySessionBaseMixin(LoginRequiredMixin, DeckAccessMixin, UserPassesTestMixin):
     def test_func(self):
         deck = self.get_deck()
-        return self.has_view_permission(self.request.user, deck)
+        return self.has_delete_permission(self.request.user, deck)
 
     def get_session_data(self):
         return self.request.session.get('current_study_session')

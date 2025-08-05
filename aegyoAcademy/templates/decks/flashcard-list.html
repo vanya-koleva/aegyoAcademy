@@ -59,11 +59,13 @@
                                    title="Edit">
                                     ✏️
                                 </a>
-                                <a href="{% url 'flashcard-delete' deck_id=deck.pk pk=flashcard.id %}" 
-                                   class="action-btn" 
-                                   title="Delete">
-                                    🗑️
-                                </a>
+                                {% if user == deck.owner or perms.decks.delete_flashcard %}
+                                    <a href="{% url 'flashcard-delete' deck_id=deck.pk pk=flashcard.id %}"
+                                       class="action-btn"
+                                       title="Delete">
+                                        🗑️
+                                    </a>
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>
@@ -123,7 +125,7 @@
                 <a href="{% url 'dashboard' %}" class="btn btn-cute btn-secondary">
                     🏠 Back to Dashboard
                 </a>
-                {% if flashcards %}
+                {% if flashcards and user == deck.owner %}
                     <a href="{% url 'study-session-start' deck.id %}" class="btn btn-cute btn-primary">
                         ✨ Start Studying ✨
                     </a>
