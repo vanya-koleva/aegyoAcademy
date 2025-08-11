@@ -29,9 +29,13 @@ class DeckBaseForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        instance.save()
 
         new_tags = self.cleaned_data['new_tags']
+
+        if commit:
+            instance.save()
+            self.save_m2m()
+
         if new_tags:
             for tag_name in new_tags.split(','):
                 tag_name = tag_name.strip()
@@ -39,8 +43,6 @@ class DeckBaseForm(forms.ModelForm):
                     tag, created = Tag.objects.get_or_create(name=tag_name)
                     instance.tags.add(tag)
 
-        if commit:
-            instance.save()
         return instance
 
 
